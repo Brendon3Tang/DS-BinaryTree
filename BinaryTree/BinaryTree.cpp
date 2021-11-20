@@ -36,13 +36,15 @@ void BinaryTree::Release(BinaryNode* bt)
 		return;
 	
 	//如果二叉树中只有root节点，或者在递归中抵达了叶子节点时，删除该节点，并返回上一层递归
-	if (bt->leftChild == NULL && bt->rightChild == NULL)
-	{
-		cout << "到达叶节点/目前只有根节点: " << bt->data << "。已删除！" << endl;
-		delete bt;
-		bt = NULL;
-		return;
-	}
+	//if (bt->leftChild == NULL && bt->rightChild == NULL)
+	//{
+	//	cout << "到达叶节点/目前只有根节点: " << bt->data << "。已删除！" << endl;
+	//	delete bt;
+	//	bt = NULL;
+	//	return;
+	//}
+	
+
 	//使用PostOrder的逻辑删除节点
 	else
 	{
@@ -56,7 +58,7 @@ void BinaryTree::Release(BinaryNode* bt)
 
 void visit(char paraData)
 {
-	cout<< paraData << " ";
+	cout << paraData << " ";
 }
 
 void BinaryTree::PreOrder(BinaryNode* bt)
@@ -124,6 +126,40 @@ BinaryNode* BinaryTree::getRoot()
 	return this->root;
 }
 
+int BinaryTree::getDepth(BinaryNode* bNode)
+{
+	if (bNode != NULL)
+	{
+		depth = max(getDepth(bNode->leftChild), getDepth(bNode->rightChild)) + 1;
+		return depth;
+	}
+	else
+		return 0;
+}
+
+int BinaryTree::getLeavesNum(BinaryNode* bNode)
+{
+	//如果reach到叶子节点的子节点或者树为空树，leave的数量为0，返回0
+	if (bNode == NULL)
+		return 0;
+	//否则继续递归，在递归过程中如果遇到叶子节点，leavesNum++。当层递归完成后返回当前的leavesNum值
+	else
+	{
+		getLeavesNum(bNode->leftChild);
+		getLeavesNum(bNode->rightChild);
+		if (bNode->leftChild == NULL && bNode->rightChild == NULL)
+		{
+			leavesNum++;
+			cout << "leavesNUM is: " << leavesNum << endl;
+		}
+		return leavesNum;
+	}
+}
+
+void BinaryTree::setArr(pNode arr[])
+{
+	arr[0].data = this->root->data;
+}
 
 int main()
 {
@@ -144,6 +180,13 @@ int main()
 	cout << "LevelOrder: " << endl;
 	myBT.LevelOrder(myBT.getRoot());
 	cout << endl;
+
+	cout << "叶子节点个数：" << myBT.getLeavesNum(myBT.getRoot()) << endl;
+
+	cout << "树的深度：" << myBT.getDepth(myBT.getRoot()) << endl;
+
+
+	pNode arr[10]; 
 
 	return 0;
 }

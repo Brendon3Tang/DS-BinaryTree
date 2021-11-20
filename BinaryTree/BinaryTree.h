@@ -7,14 +7,20 @@ struct BinaryNode {
 	BinaryNode* leftChild, * rightChild;
 };
 
+struct pNode {
+	int parent;
+	char data;
+};
 
 class BinaryTree
 {
 private:
 	BinaryNode* root;
 public:
+	
+	int depth, leavesNum;
 
-	BinaryTree() { this->root = Create(root); }
+	BinaryTree() { this->root = Create(root); depth = 0; leavesNum = 0; }
 
 	~BinaryTree() { Release(root); }
 
@@ -27,6 +33,12 @@ public:
 	void LevelOrder(BinaryNode* bNode);
 
 	BinaryNode* getRoot();
+
+	int getDepth(BinaryNode* bNode);
+
+	int getLeavesNum(BinaryNode* bNode);
+
+	void setArr(pNode arr[]);
 
 private:
 	BinaryNode* Create(BinaryNode*bTree);
