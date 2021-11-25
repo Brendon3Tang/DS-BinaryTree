@@ -23,8 +23,7 @@ public:
 
 	BinaryTree() { this->root = Create(root); depth = 0; leavesNum = 0; saveRoot = NULL; leftOrRight = 0; }
 
-	~BinaryTree()
-	{ Release(root); cout << "析构完成" << endl;}
+	~BinaryTree() { Release(root); cout << "析构完成" << endl;}
 
 	void PreOrder() { PreOrder(root); }
 
