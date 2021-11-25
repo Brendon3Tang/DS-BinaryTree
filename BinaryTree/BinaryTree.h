@@ -7,22 +7,27 @@ struct BinaryNode {
 	BinaryNode* leftChild, * rightChild;
 };
 
-struct pNode {
-	int parent;
-	char data;
-};
+//struct pNode {
+//	int parent;
+//	char data;
+//};
 
 class BinaryTree
 {
 private:
-	BinaryNode* root;
+	BinaryNode* root, * subRoot, * saveRoot;
+	int leftOrRight;
 public:
-	
+
 	int depth, leavesNum;
 
-	BinaryTree() { this->root = Create(root); depth = 0; leavesNum = 0; }
+	BinaryTree() { this->root = Create(root); depth = 0; leavesNum = 0; saveRoot = NULL; leftOrRight = 0; }
 
-	~BinaryTree() { Release(root); }
+	~BinaryTree()
+	{
+		Release(root);
+		cout << "Îö¹¹Íê³É" << endl;
+	}
 
 	void PreOrder() { PreOrder(root); }
 
@@ -38,16 +43,22 @@ public:
 
 	int getLeavesNum(BinaryNode* bNode);
 
-	void setArr(pNode arr[]);
+	BinaryNode* search(BinaryNode* bNode, char item);
+
+	void deleteSubTree(BinaryNode*& bNode);
 
 private:
-	BinaryNode* Create(BinaryNode*bTree);
+	BinaryNode* Create(BinaryNode* bTree);
 
-	void Release(BinaryNode* bTree);
+	void Release(BinaryNode*& bTree);
 
 	void PreOrder(BinaryNode* bTree);
 
 	void InOrder(BinaryNode* bTree);
 
 	void PostOrder(BinaryNode* bTree);
+
+	void findRoot(BinaryNode* bTree, BinaryNode* find);
+
+	void cleanHelper(BinaryNode* bTree);
 };

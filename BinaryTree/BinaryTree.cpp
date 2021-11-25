@@ -28,13 +28,13 @@ BinaryNode* BinaryTree::Create(BinaryNode* bt)
 }
 
 //使用postOrder的逻辑析构二叉树
-void BinaryTree::Release(BinaryNode* bt)
+void BinaryTree::Release(BinaryNode*& bt)
 {
 	/*假设树A, 只有一个子节点B。那么析构该树时会直接运行line45；然后进入递归，删除节点B；然后返回继续运行line46, 但是由于树A只有一个节点，
 因此bt->rightChild = NULL，如果不设置Release(NULL)的情况递归将无法继续进行。*/
 	if (bt == NULL)
 		return;
-	
+
 	//如果二叉树中只有root节点，或者在递归中抵达了叶子节点时，删除该节点，并返回上一层递归
 	//if (bt->leftChild == NULL && bt->rightChild == NULL)
 	//{
@@ -43,15 +43,48 @@ void BinaryTree::Release(BinaryNode* bt)
 	//	bt = NULL;
 	//	return;
 	//}
-	
+
 
 	//使用PostOrder的逻辑删除节点
 	else
 	{
 		Release(bt->leftChild);
 		Release(bt->rightChild);
-		cout << "已删除节点：" << bt->data << endl;
+		if (this->root->leftChild != NULL)
+		{
+			if (this->root->leftChild->leftChild != NULL)
+			{
+				cout << "置空前root左左孩子：" << this->root->leftChild->leftChild << endl;
+			}
+			if (this->root->leftChild->rightChild != NULL)
+			{
+				cout << "置空前root左右孩子：" << this->root->leftChild->rightChild << endl;
+			}
+
+
+		}
+
+		cout << "置空前bt：" << bt << endl;
+		cout << "已释放节点：" << bt->data << endl;
 		delete bt;
+		bt = NULL;
+		cout << "置空后：" << bt << endl;
+		//cout << "root的左左孩子的值：" << this->root->leftChild->leftChild->data << endl;
+		if (this->root != NULL && this->root->leftChild != NULL)
+		{
+			cout << "root的左孩子：" << this->root->leftChild << endl;
+			if (this->root->leftChild->leftChild != NULL)
+			{
+				cout << "置空后root左左孩子：" << this->root->leftChild->leftChild << endl;
+			}
+			if (this->root->leftChild->rightChild != NULL)
+			{
+				cout << "置空后root左右孩子：" << this->root->leftChild->rightChild << endl;
+			}
+
+
+		}
+		cout << endl;
 		return;
 	}
 }
@@ -67,6 +100,8 @@ void BinaryTree::PreOrder(BinaryNode* bt)
 		return;
 	else
 	{
+		//cout << "ROOT是：" << bt->data << endl;
+		//cout << "root的地址：" << bt << endl;
 		visit(bt->data);
 		PreOrder(bt->leftChild);
 		PreOrder(bt->rightChild);
@@ -109,7 +144,7 @@ void BinaryTree::LevelOrder(BinaryNode* bNode)
 		myQueue.push(bNode);
 		while (!myQueue.empty())
 		{
-			
+
 			visit(myQueue.front()->data);
 			if (myQueue.front()->leftChild != NULL)
 				myQueue.push(myQueue.front()->leftChild);
@@ -150,20 +185,93 @@ int BinaryTree::getLeavesNum(BinaryNode* bNode)
 		if (bNode->leftChild == NULL && bNode->rightChild == NULL)
 		{
 			leavesNum++;
-			cout << "leavesNUM is: " << leavesNum << endl;
+			//cout << "leavesNUM is: " << leavesNum << endl;
 		}
 		return leavesNum;
 	}
 }
 
-void BinaryTree::setArr(pNode arr[])
+BinaryNode* BinaryTree::search(BinaryNode* bNode, char item)
 {
-	arr[0].data = this->root->data;
+
+	if (bNode == NULL)
+		return bNode;
+
+	if (bNode->data == item)
+	{
+		cout << "bNode是：" << bNode->data << endl;
+		subRoot = bNode;
+		cout << "result是：" << subRoot->data << endl;
+
+	}
+	search(bNode->leftChild, item);
+	search(bNode->rightChild, item);
+
+	return subRoot;
 }
+
+void BinaryTree::findRoot(BinaryNode* bTree, BinaryNode* find)
+{
+	if (bTree == NULL || this->saveRoot != NULL)
+	{
+		return;
+	}
+	if (bTree->leftChild == find)
+	{
+		this->leftOrRight = 0;
+		this->saveRoot = bTree;
+		return;
+	}
+	if (bTree->rightChild == find)
+	{
+		this->leftOrRight = 1;
+		this->saveRoot = bTree;
+		return;
+	}
+	findRoot(bTree->leftChild, find);
+	findRoot(bTree->rightChild, find);
+}
+
+void BinaryTree::deleteSubTree(BinaryNode*& bNode)
+{
+	findRoot(this->root, bNode);
+	Release(bNode);
+
+	if (saveRoot != NULL)
+	{
+		if (leftOrRight == 0)
+		{
+			saveRoot->leftChild = NULL;
+		}
+		else
+		{
+			saveRoot->rightChild = NULL;
+		}
+	}
+	/*if (bNode == NULL)
+		return;
+
+
+	deleteSubTree(bNode->leftChild);
+	deleteSubTree(bNode->rightChild);
+	cout << "删除子树的节点：" << bNode->data << endl;
+	delete bNode;
+	bNode = NULL;
+
+	return;*/
+
+}
+
+//void BinaryTree::setArr(pNode arr[])
+//{
+//	arr[0].data = this->root->data;
+//}
 
 int main()
 {
 	BinaryTree myBT;
+	BinaryNode* subRoot = NULL;
+	cout << "空指针地址：" << subRoot << endl;
 
 	cout << "PreOrder: " << endl;
 	myBT.PreOrder();
@@ -185,8 +293,18 @@ int main()
 
 	cout << "树的深度：" << myBT.getDepth(myBT.getRoot()) << endl;
 
+	subRoot = myBT.search(myBT.getRoot(), 'B');
+	//cout << "subRoot是：" << subRoot->data << endl;
 
-	pNode arr[10]; 
+	cout << "删除节点B的子树: " << endl;
+	myBT.deleteSubTree(subRoot);
+	cout << "删除完成" << endl;
+
+	cout << "删除后PreOrder: " << endl;
+	myBT.PreOrder();
+	cout << endl;
+
+	//pNode arr[10]; 
 
 	return 0;
 }
