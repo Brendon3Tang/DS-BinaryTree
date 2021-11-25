@@ -210,6 +210,7 @@ BinaryNode* BinaryTree::search(BinaryNode* bNode, char item)
 	return subRoot;
 }
 
+//找到子树根节点的上一个节点X，并保存该节点，然后将X节点的左/右子节点置空，以免产生野指针
 void BinaryTree::findRoot(BinaryNode* bTree, BinaryNode* find)
 {
 	if (bTree == NULL || this->saveRoot != NULL)
@@ -234,9 +235,13 @@ void BinaryTree::findRoot(BinaryNode* bTree, BinaryNode* find)
 
 void BinaryTree::deleteSubTree(BinaryNode*& bNode)
 {
+	//用find函数找到子树根节点的上一个节点，并保存该节点
 	findRoot(this->root, bNode);
+
 	Release(bNode);
 
+	/*Release bNode之后，bNode被置空，但是指向bNode的xxx->child指针不会被置空。
+	此时就需要把xxx保存给saveRoot,并将saveRoot->L/Rchild置空来将xxx->child置空，以免出现野指针*/
 	if (saveRoot != NULL)
 	{
 		if (leftOrRight == 0)
